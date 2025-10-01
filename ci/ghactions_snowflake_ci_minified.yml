@@ -1,0 +1,19 @@
+name:ci-snowflake
+on:[push]
+jobs:
+ test:
+  runs-on:ubuntu-latest
+  steps:
+  -uses:actions/checkout@v4
+  -name:InstallPython
+   run:python -m pip install --upgrade pip wheel
+  -name:SnowsqlRun
+   env: {SNOW_ACCOUNT:${{ secrets.SNOW_ACCOUNT }},SNOW_USER:${{ secrets.SNOW_USER }},SNOW_PW:${{ secrets.SNOW_PW }},SNOW_ROLE:${{ secrets.SNOW_ROLE }},SNOW_WAREHOUSE:${{ secrets.SNOW_WAREHOUSE }},SNOW_DB:${{ secrets.SNOW_DB }},SNOW_SCHEMA:${{ secrets.SNOW_SCHEMA }}}
+   run: |
+    pip install snowflake-connector-python
+    snowsql -a $SNOW_ACCOUNT -u $SNOW_USER -r $SNOW_ROLE -w $SNOW_WAREHOUSE -d $SNOW_DB -s $SNOW_SCHEMA -q "SELECT 1;"
+  -name:RunSmoke
+   env: {SNOW_ACCOUNT:${{ secrets.SNOW_ACCOUNT }},SNOW_USER:${{ secrets.SNOW_USER }},SNOW_PW:${{ secrets.SNOW_PW }},SNOW_ROLE:${{ secrets.SNOW_ROLE }},SNOW_WAREHOUSE:${{ secrets.SNOW_WAREHOUSE }},SNOW_DB:${{ secrets.SNOW_DB }},SNOW_SCHEMA:${{ secrets.SNOW_SCHEMA }}}
+   run: |
+    pip install -r tests/ci/requirements.txt || true
+    python tests/ci/expanded_smoke.py

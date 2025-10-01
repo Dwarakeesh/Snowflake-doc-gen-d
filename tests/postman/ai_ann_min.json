@@ -1,0 +1,33 @@
+{
+    "info": {
+        "name": "AI-ANN-Contracts",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "ANNSimilarity",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"q\":\"legal clause\",\"k\":5}"
+                },
+                "url": {
+                    "raw": "https://REPLACE-ANN-GW/similarity",
+                    "host": [
+                        "https://REPLACE-ANN-GW"
+                    ],
+                    "path": [
+                        "similarity"
+                    ]
+                }
+            }
+        }
+    ]
+}

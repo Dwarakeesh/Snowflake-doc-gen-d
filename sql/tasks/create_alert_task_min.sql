@@ -1,0 +1,6 @@
+-- Schedule a task to run reconciliation alerts every hour at minute 15
+CREATE OR REPLACE TASK AI_FEATURE_HUB.TASK_RUN_RECONCILE_ALERTS
+    WAREHOUSE = 'COMPUTE_WH'
+    SCHEDULE = 'USING CRON 15 * * * * UTC'
+AS
+    CALL AI_FEATURE_HUB.RUN_RECONCILIATION_ALERTS();

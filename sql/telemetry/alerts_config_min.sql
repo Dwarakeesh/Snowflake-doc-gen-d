@@ -1,0 +1,27 @@
+-- Create alert configuration table
+CREATE OR REPLACE TABLE AI_FEATURE_HUB.ALERT_CONFIG (
+    ALERT_ID STRING PRIMARY KEY,
+    NAME STRING,
+    QUERY TEXT,
+    SEVERITY STRING,
+    ENABLED BOOLEAN DEFAULT TRUE,
+    CREATED_AT TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- Insert sample alert for high P95 latency
+INSERT INTO AI_FEATURE_HUB.ALERT_CONFIG (
+    ALERT_ID,
+    NAME,
+    QUERY,
+    SEVERITY
+)
+VALUES (
+    'alert-p95-latency',
+    'Model P95 High',
+    'SELECT model_id, account_id, APPROX_PERCENTILE(latency_ms, 0.95) AS p95
+     FROM AI_FEATURE_HUB.MODEL_TELEMETRY
+     WHERE CREATED_AT >= DATEADD(hour, -1, CURRENT_TIMESTAMP())
+     GROUP BY model_id, account_id
+     HAVING p95 > 2000',
+    'HIGH'
+);

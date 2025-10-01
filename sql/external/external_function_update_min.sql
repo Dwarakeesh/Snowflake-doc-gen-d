@@ -1,0 +1,4 @@
+-- Update External Function URL (useful when rolling container)
+ALTER EXTERNAL FUNCTION AI_FEATURE_HUB.ANN_SIMILARITY SET URL='https://REPLACE-ANN-GW/similarity';
+-- re-register API_INTEGRATION if needed
+ALTER API_INTEGRATION AI_FEATURE_HUB.ANN_EXTERNAL SET ENABLED=TRUE;
