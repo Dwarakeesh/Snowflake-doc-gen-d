@@ -1,0 +1,2 @@
+from snowflake.snowpark import Session
+defpromote_model(session:Session,model_id:str): session.sql("update AI_FEATURE_HUB.MODEL_REGISTRY set is_active=false where model_key=(select model_key from AI_FEATURE_HUB.MODEL_REGISTRY where model_id=%s)",(model_id,)).collect(); session.sql("update AI_FEATURE_HUB.MODEL_REGISTRY set is_active=true where model_id=%s",(model_id,)).collect(); return{'promoted':model_id}

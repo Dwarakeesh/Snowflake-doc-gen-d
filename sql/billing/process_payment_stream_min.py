@@ -1,0 +1,1 @@
+from snowflake.snowpark import Session;def process_payment_stream(session:Session):stream_data=session.sql("SELECT * FROM AI_FEATURE_HUB.S_INVOICE_PAYMENTS").collect();for row in stream_data:#Logic to process each payment event and update invoice statusreturn {'processed_records':len(stream_data)}

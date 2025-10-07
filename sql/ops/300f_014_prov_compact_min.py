@@ -1,0 +1,2 @@
+from snowflake.snowpark import Session
+defcompact_provenance(session:Session,older_than_days=90): session.sql("delete from AI_FEATURE_HUB.INFERENCE_PROVENANCE where created_at<dateadd(day,-%s,current_timestamp())"%(older_than_days)).collect(); return{'compacted':True}

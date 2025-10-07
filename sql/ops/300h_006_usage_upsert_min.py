@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importuuid
+defupsert_usage(session:Session,usage): session.sql("merge into AI_FEATURE_HUB.TENANT_FEATURE_USAGE t using (select %s usage_id,%s account_id,%s feature_key,%s units,%s unit_price,current_timestamp() usage_timestamp) s on t.USAGE_ID=s.usage_id when matched then update set UNITS=s.units when not matched then insert (USAGE_ID,ACCOUNT_ID,FEATURE_KEY,UNITS,UNIT_PRICE,USAGE_TIMESTAMP) values (s.usage_id,s.account_id,s.feature_key,s.units,s.unit_price,s.usage_timestamp)",(usage.get('usage_id',str(uuid.uuid4())),usage.get('account_id'),usage.get('feature_key'),usage.get('units',1),usage.get('unit_price',0.0))).collect(); return{'ok':True}

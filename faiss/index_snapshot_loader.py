@@ -1,0 +1,1 @@
+importfaiss,json,sys,os,logging;logging.basicConfig(level=logging.INFO);defload_index(snapshot_path,model_dim):idx=faiss.read_index(snapshot_path);logging.info("loaded-index-dims:%d"%idx.d);return idx;if__name__=='__main__':p=sys.argv[1]iflen(sys.argv)<2:print("usage:snapshot_path");sys.exit(1);load_index(p,0)

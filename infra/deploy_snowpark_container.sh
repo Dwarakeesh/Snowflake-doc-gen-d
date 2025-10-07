@@ -1,0 +1,1 @@
+#!/bin/bash;set-e;REGISTRY=${REGISTRY:-"your.registry/repo"};IMAGE=${IMAGE:-"$REGISTRY/snowpark-agent:latest"};echo "Building image"$IMAGE;dockerbuild-t$IMAGE.;dockerpush$IMAGE;echo "Registering container with Snowflake (placeholder)";snowsql-q"call SYSTEM$REGISTER_CONTAINER('$IMAGE')"||echo"register-failed"

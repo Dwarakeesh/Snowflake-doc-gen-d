@@ -1,0 +1,1 @@
+-- placeholder: write alert rows to ALERTS table; external alerting via webhook is handled by external process that polls ALERTS table and posts to Slack per config

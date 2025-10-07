@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importjson,uuid,datetime
+defschedule_retention_job(session:Session,policy_id:str): r=session.sql("select * from AI_FEATURE_HUB.RETENTION_POLICIES where POLICY_ID=%s",(policy_id,)).collect() if not r: return{'error':'policy_not_found'} p=r[0].as_dict() job_id=f"job-{uuid.uuid4().hex[:12]}" q=f"insert into AI_FEATURE_HUB.ARCHIVE_JOBS(job_id,object_type,query,archive_stage,run_at,details) values ('{job_id}','{p['APPLY_TO']}','{ '/* retention query placeholder */' }','@AI_FEATURE_HUB.ARCHIVE_STAGE',current_timestamp(),parse_json('{json.dumps(p)}'))" session.sql(q).collect() return{'scheduled':job_id}

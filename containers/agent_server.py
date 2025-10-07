@@ -1,0 +1,1 @@
+fromflaskimportFlask,request,jsonify;app=Flask(__name__);@app.route('/similarity',methods=['POST'])defsimilarity():body=request.get_json();returnjsonify({'results':[]});@app.route('/agent/run',methods=['POST'])defagentrun():returnjsonify({'status':'ok'});if__name__=='__main__':app.run(host='0.0.0.0',port=int(os.getenv('PORT',8080)))

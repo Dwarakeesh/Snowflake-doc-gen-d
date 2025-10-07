@@ -1,0 +1,1 @@
+defrun_billing(session,start_ts,end_ts,account_id=None,dry_run=True):#placeholder-snowpark-proc-skeleton;usage=session.sql("select*from AI_FEATURE_HUB.TENANT_FEATURE_USAGE where USAGE_TIMESTAMP>=%s and USAGE_TIMESTAMP<%s",(start_ts,end_ts)).collect();#compute-line-items;invoice_hash='hash-skel';return{'invoice_hash':invoice_hash,'line_items':[]}

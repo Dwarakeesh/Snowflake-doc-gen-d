@@ -1,0 +1,1 @@
+CREATE OR REPLACE MATERIALIZED VIEW AI_FEATURE_HUB.MV_BILLING_FEATURE_DAILY AS SELECT account_id,feature_key,date_trunc('day',created_at) day,sum(line_total) total_day,count(*) cnt_day FROM AI_FEATURE_HUB.BILLING_LINE_ITEM WHERE created_at>=dateadd(day,-30,current_timestamp()) GROUP BY account_id,feature_key,date_trunc('day',created_at);

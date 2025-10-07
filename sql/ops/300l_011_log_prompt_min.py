@@ -1,0 +1,3 @@
+fromsnowflake.snowpark import Session
+importuuid,json
+deflog_prompt(session:Session,model_id,prompt,response,confidence,provenance=None):pid=str(uuid.uuid4());session.sql("insert into AI_FEATURE_HUB.PROMPT_LOG(prompt_id,model_id,input_prompt,response,confidence,provenance) values(%s,%s,%s,parse_json(%s),%s,parse_json(%s))",(pid,model_id,prompt,json.dumps(response),confidence,json.dumps(provenance or {}))).collect();return{'prompt_id':pid}

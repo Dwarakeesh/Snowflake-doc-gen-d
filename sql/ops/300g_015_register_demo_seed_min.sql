@@ -1,0 +1,1 @@
+-- seed demo executed via snowsql -f sql/ops/300g_014_seeding_demo_min.sql

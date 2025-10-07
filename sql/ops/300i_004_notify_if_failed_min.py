@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importos,requests
+defnotify_if_failed(session:Session):rows=session.sql("select jobrun_id,job_name,status from AI_FEATURE_HUB.JOBRUNS where status='FAILED' and ENDED_AT>dateadd(minute,-10,current_timestamp())").collect();ifrows:hook=os.getenv('ALERT_WEBHOOK');payload=[r.as_dict() for r in rows];requests.post(hook,json=payload,timeout=5);return{'failed':len(rows)}else:return{'failed':0}

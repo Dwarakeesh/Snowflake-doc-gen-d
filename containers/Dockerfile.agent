@@ -1,0 +1,1 @@
+FROMpython:3.10-slim;RUNapt-getupdate&&apt-getinstall-ybuild-essentialcurlgitlibatlas-base-devlibomp-dev&&rm-rf/var/lib/apt/lists/*;WORKDIR/app;COPY. /app;RUNpipinstall-rrequirements.txt;CMD["python","agent_server.py"]

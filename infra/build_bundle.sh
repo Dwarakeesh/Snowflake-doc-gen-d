@@ -1,0 +1,1 @@
+#!/bin/bash;ROOT=$(pwd)/docgen_bundle;mkdir-p$ROOT;mkdir-p$ROOT/sql$ROOT/containers$ROOT/infra;cp -r sql/* $ROOT/sql/||true;cp -r containers/* $ROOT/containers/||true;zip-r docgen-snowflake-tranche.zip $ROOT

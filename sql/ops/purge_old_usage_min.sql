@@ -1,0 +1,1 @@
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.PURGE_OLD_USAGE(older_than_days NUMBER DEFAULT 365) RETURNS VARIANT LANGUAGE SQL AS $$ delete from AI_FEATURE_HUB.TENANT_FEATURE_USAGE where USAGE_TIMESTAMP<dateadd(day,-older_than_days,current_timestamp()); return 'ok'; $$;

@@ -1,0 +1,38 @@
+-- rate_rule_staging_and_approval.sql
+USE DATABASE AI_PLATFORM;
+USE SCHEMA AI_FEATURE_HUB;
+
+-- Staging table where business UI writes proposed rule changes (unapproved)
+CREATE OR REPLACE TABLE AI_FEATURE_HUB.RATE_RULES_STAGING (
+  STAGING_ID STRING PRIMARY KEY,
+  FEATURE_KEY STRING NOT NULL,
+  RULE_TYPE STRING NOT NULL, -- 'TIER','CAP','MINIMUM','DISCOUNT','TAX','FLAT'
+  CONFIG VARIANT NOT NULL, -- JSON of the rule config
+  PRIORITY NUMBER DEFAULT 100,
+  SUBMITTED_BY STRING,
+  SUBMITTED_AT TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP(),
+  APPROVED BOOLEAN DEFAULT FALSE,
+  APPROVED_BY STRING,
+  APPROVED_AT TIMESTAMP_LTZ,
+  REJECTED BOOLEAN DEFAULT FALSE,
+  REJECT_REASON STRING,
+  ARCHIVED BOOLEAN DEFAULT FALSE
+);
+
+-- Approval audit table
+CREATE OR REPLACE TABLE AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (
+  AUDIT_ID STRING PRIMARY KEY,
+  STAGING_ID STRING,
+  ACTION STRING, -- 'SUBMIT','APPROVE','REJECT','ARCHIVE'
+  ACTOR STRING,
+  ACTION_TS TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP(),
+  DETAILS VARIANT
+);
+
+-- Stored-proc skeletons: these expected to be implemented in Python (Snowpark) and registered.
+-- We provide SQL REGISTER lines below that expect the Python files to be PUT to @~.
+
+-- NOTE: implement the following Python procedures and then register them:
+-- 1) AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING(staging_json STRING)  -> inserts into RATE_RULES_STAGING and writes audit
+-- 2) AI_FEATURE_HUB.APPROVE_RATE_RULE(staging_id STRING, approver STRING) -> moves row into RATE_RULES (MERGE), sets APPROVED, writes audit
+-- 3) AI_FEATURE_HUB.REJECT_RATE_RULE(staging_id STRING, approver STRING, reason STRING) -> sets REJECTED + writes audit

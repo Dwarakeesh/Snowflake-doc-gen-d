@@ -1,0 +1,1 @@
+--snowflake_bundle:registerprocedures,externalfunctions,roles,taskexamples;--PUT python files to stage and CREATE PROCEDURE with IMPORTS;--Adjust WAREHOUSE/ROLE names before running;--See README_DEPLOY_SNOWFLAKE.md for sequence

@@ -4,75 +4,28 @@
 -- PUT file://sql/reconcile/reconcile_proc.py @~/ AUTO_COMPRESS=FALSE;
 -- PUT file://sql/billing/submit_and_approve_procs.py @~/ AUTO_COMPRESS=FALSE;
 -- PUT file://sql/billing/pricing_engine.py @~/ AUTO_COMPRESS=FALSE;
-
--- Create RUN_BILLING_RUN_ENHANCED procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.RUN_BILLING_RUN_ENHANCED(
-        window_start STRING,
-        window_end STRING,
-        account_id STRING,
-        dry_run BOOLEAN
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/run_billing_enhanced.py')
-    HANDLER = 'run_billing_enhanced';
-
--- Create PERSIST_BILLING_RUNS procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.PERSIST_BILLING_RUNS(
-        older_than_minutes NUMBER DEFAULT 60,
-        preview_only BOOLEAN DEFAULT TRUE
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/persist_billing_proc.py')
-    HANDLER = 'persist_billing_runs';
-
--- Create RECONCILE_BILLING_VS_USAGE procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.RECONCILE_BILLING_VS_USAGE(
-        account_id STRING DEFAULT NULL,
-        window_start STRING DEFAULT NULL,
-        window_end STRING DEFAULT NULL
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/reconcile_proc.py')
-    HANDLER = 'reconcile_billing_vs_usage';
-
--- Rate rule management procedures
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING(
-        staging_json STRING
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/submit_and_approve_procs.py')
-    HANDLER = 'submit_rate_rule';
-
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.APPROVE_RATE_RULE(
-        staging_id STRING,
-        approver STRING
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/submit_and_approve_procs.py')
-    HANDLER = 'approve_rate_rule';
-
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.REJECT_RATE_RULE(
-        staging_id STRING,
-        approver STRING,
-        reason STRING
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/submit_and_approve_procs.py')
-    HANDLER = 'reject_rate_rule';
-
--- Grants (replace roles accordingly)
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.RUN_BILLING_RUN_ENHANCED(window_start STRING,window_end STRING,account_id STRING,dry_run BOOLEAN)
+RETURNS VARIANT
+LANGUAGE PYTHON
+RUNTIME_VERSION='3.10'
+IMPORTS=('@~/run_billing_enhanced.py')
+HANDLER='run_billing_enhanced';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.PERSIST_BILLING_RUNS(older_than_minutes NUMBER DEFAULT 60,preview_only BOOLEAN DEFAULT TRUE)
+RETURNS VARIANT
+LANGUAGE PYTHON
+RUNTIME_VERSION='3.10'
+IMPORTS=('@~/persist_billing_proc.py')
+HANDLER='persist_billing_runs';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.RECONCILE_BILLING_VS_USAGE(account_id STRING DEFAULT NULL,window_start STRING DEFAULT NULL,window_end STRING DEFAULT NULL)
+RETURNS VARIANT
+LANGUAGE PYTHON
+RUNTIME_VERSION='3.10'
+IMPORTS=('@~/reconcile_proc.py')
+HANDLER='reconcile_billing_vs_usage';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING(staging_json STRING) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/submit_and_approve_procs.py') HANDLER='submit_rate_rule';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.APPROVE_RATE_RULE(staging_id STRING,approver STRING) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/submit_and_approve_procs.py') HANDLER='approve_rate_rule';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.REJECT_RATE_RULE(staging_id STRING,approver STRING,reason STRING) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/submit_and_approve_procs.py') HANDLER='reject_rate_rule';
+-- Grants (replace roles)
 GRANT EXECUTE ON PROCEDURE AI_FEATURE_HUB.RUN_BILLING_RUN_ENHANCED TO ROLE YOUR_RUN_ROLE;
 GRANT EXECUTE ON PROCEDURE AI_FEATURE_HUB.PERSIST_BILLING_RUNS TO ROLE YOUR_RUN_ROLE;
 GRANT EXECUTE ON PROCEDURE AI_FEATURE_HUB.RECONCILE_BILLING_VS_USAGE TO ROLE YOUR_RUN_ROLE;

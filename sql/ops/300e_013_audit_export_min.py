@@ -1,0 +1,2 @@
+from snowflake.snowpark import Session
+defexport_audit(session:Session,invoice_id,stage): session.sql("call AI_FEATURE_HUB.EXPORT_EVIDENCE_BUNDLE(%s,%s)",(invoice_id,stage)).collect(); return {'exported':invoice_id}

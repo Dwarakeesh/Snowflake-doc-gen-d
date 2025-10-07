@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importjson,uuid
+defupsert_jobrun(session:Session,job_name,status,details=None):jid=str(uuid.uuid4());session.sql("merge into AI_FEATURE_HUB.JOBRUNS t using (select %s jobrun_id,%s job_name,%s status,current_timestamp() started_at,parse_json(%s) details) s on t.jobrun_id=s.jobrun_id when not matched then insert (JOBRUN_ID,JOB_NAME,STATUS,STARTED_AT,DETAILS) values (s.jobrun_id,s.job_name,s.status,s.started_at,s.details) when matched then update set STATUS=s.status,ENDED_AT=current_timestamp(),DETAILS=s.details",(jid,job_name,status,json.dumps(details or {}))).collect();return{'jobrun_id':jid}

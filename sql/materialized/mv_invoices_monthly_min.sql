@@ -1,0 +1,1 @@
+CREATE OR REPLACE MATERIALIZED VIEW AI_FEATURE_HUB.MV_INVOICES_MONTHLY AS SELECT account_id,date_trunc('month',created_at) month,count(*) invoices,sum(total) total_billed FROM AI_FEATURE_HUB.SUBSCRIPTION_INVOICES GROUP BY account_id,date_trunc('month',created_at);

@@ -1,172 +1,21 @@
-from snowflake.snowpark import Session, functions as F
-import json
-import uuid
-import datetime
-
-
-def submit_rate_rule(session: Session, staging_json: str):
-    """
-    Submit a rate rule to staging.
-
-    Args:
-        session (Session): Snowpark session.
-        staging_json (str): JSON string with keys: feature_key, rule_type, config (dict), priority, submitted_by
-
-    Returns:
-        dict: Status and generated staging_id.
-    """
-    payload = json.loads(staging_json)
-    staging_id = f"stg-{uuid.uuid4().hex[:12]}"
-
-    # Insert into staging table
-    session.sql(f"""
-        INSERT INTO AI_FEATURE_HUB.RATE_RULES_STAGING (
-            STAGING_ID, FEATURE_KEY, RULE_TYPE, CONFIG, PRIORITY, SUBMITTED_BY, SUBMITTED_AT
-        )
-        VALUES (
-            '{staging_id}',
-            '{payload.get('feature_key')}',
-            '{payload.get('rule_type')}',
-            PARSE_JSON('{json.dumps(payload.get('config'))}'),
-            {payload.get('priority', 100)},
-            '{payload.get('submitted_by', 'streamlit')}',
-            CURRENT_TIMESTAMP()
-        );
-    """).collect()
-
-    # Insert audit
-    session.sql(f"""
-        INSERT INTO AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (
-            AUDIT_ID, STAGING_ID, ACTION, ACTOR, ACTION_TS, DETAILS
-        )
-        VALUES (
-            'audit-{uuid.uuid4().hex[:12]}',
-            '{staging_id}',
-            'SUBMIT',
-            '{payload.get('submitted_by','streamlit')}',
-            CURRENT_TIMESTAMP(),
-            PARSE_JSON('{json.dumps(payload)}')
-        );
-    """).collect()
-
-    return {"status": "submitted", "staging_id": staging_id}
-
-
-def approve_rate_rule(session: Session, staging_id: str, approver: str):
-    """
-    Approve a rate rule in staging and merge it into RATE_RULES.
-
-    Args:
-        session (Session): Snowpark session.
-        staging_id (str): Staging ID to approve.
-        approver (str): User approving the rule.
-
-    Returns:
-        dict: Status, staging_id, and generated rule_id.
-    """
-    # Fetch staging row
-    rows = session.sql(f"""
-        SELECT * 
-        FROM AI_FEATURE_HUB.RATE_RULES_STAGING 
-        WHERE STAGING_ID = '{staging_id}' 
-          AND APPROVED = FALSE 
-          AND REJECTED = FALSE
-    """).collect()
-
-    if not rows:
-        return {"status": "not_found_or_already_processed", "staging_id": staging_id}
-
-    r = rows[0].as_dict()
-    rule_id = f"rule-{r['FEATURE_KEY']}-{r['RULE_TYPE']}-{staging_id}"
-    config_json = json.dumps(r['CONFIG'])
-
-    # Merge into RATE_RULES table
-    session.sql(f"""
-        MERGE INTO AI_FEATURE_HUB.RATE_RULES tgt
-        USING (
-            SELECT 
-                '{rule_id}' AS RULE_ID,
-                '{r['FEATURE_KEY']}' AS FEATURE_KEY,
-                '{r['RULE_TYPE']}' AS RULE_TYPE,
-                PARSE_JSON('{config_json}') AS CONFIG,
-                {r['PRIORITY']} AS PRIORITY
-        ) src
-        ON tgt.RULE_ID = src.RULE_ID
-        WHEN MATCHED THEN UPDATE 
-            SET FEATURE_KEY = src.FEATURE_KEY,
-                RULE_TYPE = src.RULE_TYPE,
-                CONFIG = src.CONFIG,
-                PRIORITY = src.PRIORITY,
-                ACTIVE = TRUE,
-                EFFECTIVE_FROM = CURRENT_TIMESTAMP()
-        WHEN NOT MATCHED THEN INSERT (
-            RULE_ID, FEATURE_KEY, RULE_TYPE, CONFIG, PRIORITY, EFFECTIVE_FROM, ACTIVE, CREATED_AT
-        ) VALUES (
-            src.RULE_ID, src.FEATURE_KEY, src.RULE_TYPE, src.CONFIG, src.PRIORITY, CURRENT_TIMESTAMP(), TRUE, CURRENT_TIMESTAMP()
-        );
-    """).collect()
-
-    # Update staging row
-    session.sql(f"""
-        UPDATE AI_FEATURE_HUB.RATE_RULES_STAGING
-        SET APPROVED = TRUE, APPROVED_BY = '{approver}', APPROVED_AT = CURRENT_TIMESTAMP()
-        WHERE STAGING_ID = '{staging_id}';
-    """).collect()
-
-    # Insert audit
-    session.sql(f"""
-        INSERT INTO AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (
-            AUDIT_ID, STAGING_ID, ACTION, ACTOR, ACTION_TS, DETAILS
-        )
-        VALUES (
-            'audit-{uuid.uuid4().hex[:12]}',
-            '{staging_id}',
-            'APPROVE',
-            '{approver}',
-            CURRENT_TIMESTAMP(),
-            PARSE_JSON('{json.dumps(r)}')
-        );
-    """).collect()
-
-    return {"status": "approved", "staging_id": staging_id, "rule_id": rule_id}
-
-
-def reject_rate_rule(session: Session, staging_id: str, approver: str, reason: str):
-    """
-    Reject a rate rule in staging and write audit entry.
-
-    Args:
-        session (Session): Snowpark session.
-        staging_id (str): Staging ID to reject.
-        approver (str): User rejecting the rule.
-        reason (str): Reason for rejection.
-
-    Returns:
-        dict: Status and staging_id.
-    """
-    # Mark staging as rejected
-    session.sql(f"""
-        UPDATE AI_FEATURE_HUB.RATE_RULES_STAGING
-        SET REJECTED = TRUE,
-            REJECT_REASON = '{reason}',
-            APPROVED_BY = '{approver}',
-            APPROVED_AT = CURRENT_TIMESTAMP()
-        WHERE STAGING_ID = '{staging_id}';
-    """).collect()
-
-    # Insert audit
-    session.sql(f"""
-        INSERT INTO AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (
-            AUDIT_ID, STAGING_ID, ACTION, ACTOR, ACTION_TS, DETAILS
-        )
-        VALUES (
-            'audit-{uuid.uuid4().hex[:12]}',
-            '{staging_id}',
-            'REJECT',
-            '{approver}',
-            CURRENT_TIMESTAMP(),
-            PARSE_JSON('{{"reason": "{reason}"}}')
-        );
-    """).collect()
-
-    return {"status": "rejected", "staging_id": staging_id}
+from snowflake.snowpark import Session
+importjson,uuid
+def submit_rate_rule(session:Session,staging_json:str):
+ p=json.loads(staging_json)
+ stg_id=f"stg-{uuid.uuid4().hex[:12]}"
+ session.sql("insert into AI_FEATURE_HUB.RATE_RULES_STAGING (STAGING_ID,FEATURE_KEY,RULE_TYPE,CONFIG,PRIORITY,SUBMITTED_BY,SUBMITTED_AT) values (%s,%s,%s,PARSE_JSON(%s),%s,%s,current_timestamp())",(stg_id,p.get('feature_key'),p.get('rule_type'),json.dumps(p.get('config')),p.get('priority',100),p.get('submitted_by','streamlit'))).collect()
+ session.sql("insert into AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (AUDIT_ID,STAGING_ID,ACTION,ACTOR,ACTION_TS,DETAILS) values (%s,%s,'SUBMIT',%s,current_timestamp(),PARSE_JSON(%s))",(f"audit-{uuid.uuid4().hex[:12]}",stg_id,p.get('submitted_by','streamlit'),json.dumps(p))).collect()
+ return {'status':'submitted','staging_id':stg_id}
+def approve_rate_rule(session:Session,staging_id:str,approver:str):
+ rows=session.sql("select feature_key,rule_type,config,priority from AI_FEATURE_HUB.RATE_RULES_STAGING where staging_id=%s and approved=false and rejected=false",(staging_id,)).collect()
+ if not rows: return {'status':'not_found_or_processed','staging_id':staging_id}
+ r=rows[0].as_dict()
+ rule_id=f"rule-{r['FEATURE_KEY']}-{r['RULE_TYPE']}-{staging_id}"
+ session.sql("merge into AI_FEATURE_HUB.RATE_RULES t using (select %s as rule_id, %s as feature_key, %s as rule_type, PARSE_JSON(%s) as config, %s as priority) s on t.rule_id=s.rule_id when matched then update set feature_key=s.feature_key,rule_type=s.rule_type,config=s.config,priority=s.priority,active=true,effective_from=current_timestamp() when not matched then insert (rule_id,feature_key,rule_type,config,priority,effective_from,active,created_at) values (s.rule_id,s.feature_key,s.rule_type,s.config,s.priority,current_timestamp(),true,current_timestamp())",(rule_id,r['FEATURE_KEY'],r['RULE_TYPE'],json.dumps(r['CONFIG']),r['PRIORITY'])).collect()
+ session.sql("update AI_FEATURE_HUB.RATE_RULES_STAGING set approved=true,approved_by=%s,approved_at=current_timestamp() where staging_id=%s",(approver,staging_id)).collect()
+ session.sql("insert into AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (AUDIT_ID,STAGING_ID,ACTION,ACTOR,ACTION_TS) values (%s,%s,'APPROVE',%s,current_timestamp())",(f"audit-{uuid.uuid4().hex[:12]}",staging_id,approver)).collect()
+ return {'status':'approved','staging_id':staging_id,'rule_id':rule_id}
+def reject_rate_rule(session:Session,staging_id:str,approver:str,reason:str):
+ session.sql("update AI_FEATURE_HUB.RATE_RULES_STAGING set rejected=true,reject_reason=%s,approved_by=%s,approved_at=current_timestamp() where staging_id=%s",(reason,approver,staging_id)).collect()
+ session.sql("insert into AI_FEATURE_HUB.RATE_RULES_APPROVAL_AUDIT (AUDIT_ID,STAGING_ID,ACTION,ACTOR,ACTION_TS,DETAILS) values (%s,%s,'REJECT',%s,current_timestamp(),PARSE_JSON(%s))",(f"audit-{uuid.uuid4().hex[:12]}",staging_id,approver,json.dumps({'reason':reason}))).collect()
+ return {'status':'rejected','staging_id':staging_id}

@@ -1,0 +1,1 @@
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.EXPORT_EVIDENCE_BUNDLE(target_id STRING,stage_path STRING) RETURNS VARIANT LANGUAGE SQL AS $$ -- assemble evidence bundle and PUT to stage; placeholder SELECT 'bundle_ready' AS status; $$;

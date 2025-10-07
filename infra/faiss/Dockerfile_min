@@ -1,0 +1,5 @@
+FROM python:3.10-slim
+RUN apt-get update && apt-get install -y build-essential wget git libatlas-base-dev libomp-dev && rm -rf /var/lib/apt/lists/*
+COPY faiss/index_snapshot_loader_min.py /app/index_loader.py
+RUN pip install boto3 faiss-cpu
+CMD ["python","/app/index_loader.py"]

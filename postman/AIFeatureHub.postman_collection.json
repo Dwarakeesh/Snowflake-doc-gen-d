@@ -1,0 +1,1 @@
+{"info":{"name":"AIFeatureHub","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"RunBilling","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":{"raw":"http://localhost:8080/mock/run_billing","host":["localhost"],"port":"8080","path":["mock","run_billing"]}}}]}

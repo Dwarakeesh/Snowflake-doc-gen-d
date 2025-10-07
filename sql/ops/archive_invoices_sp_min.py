@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importjson,uuid
+defarchive_old_invoices(session:Session,older_than_days:int=365,batch_size:int=1000): rows=session.sql("select invoice_id from AI_FEATURE_HUB.SUBSCRIPTION_INVOICES where created_at<dateadd(day,-%s,current_timestamp()) limit %s"%(older_than_days,batch_size)).collect() archived=0 for r in rows: iid=r['INVOICE_ID'] session.sql("insert into AI_FEATURE_HUB.ARCHIVE_INVOICES select * from AI_FEATURE_HUB.SUBSCRIPTION_INVOICES where invoice_id=%s",(iid,)).collect() session.sql("delete from AI_FEATURE_HUB.SUBSCRIPTION_INVOICES where invoice_id=%s",(iid,)).collect() archived+=1 return{'archived':archived}

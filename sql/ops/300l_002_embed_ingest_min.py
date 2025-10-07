@@ -1,0 +1,3 @@
+fromsnowflake.snowpark import Session
+importjson,uuid
+defingest_embedding(session:Session,document_id,embedding,model_id,provenance=None):eid=str(uuid.uuid4());session.sql("insert into AI_FEATURE_HUB.DOCUMENT_EMBEDDINGS(emb_id,document_id,embedding,model_id,provenance) values(%s,%s,parse_json(%s),%s,parse_json(%s))",(eid,document_id,json.dumps(embedding),model_id,json.dumps(provenance or {}))).collect();return{'emb_id':eid}

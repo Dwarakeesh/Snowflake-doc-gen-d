@@ -1,0 +1,1 @@
+CREATE OR REPLACE VIEW AI_FEATURE_HUB.V_BILLING_PREVIEW AS SELECT account_id,feature_key,SUM(units)*MIN(unit_price) est_total FROM AI_FEATURE_HUB.TENANT_FEATURE_USAGE GROUP BY account_id,feature_key;

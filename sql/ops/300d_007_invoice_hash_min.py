@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importhashlib
+defcompute_invoice_hash(session:Session,invoice_id:str): rows=session.sql("select object_construct(*) j from AI_FEATURE_HUB.BILLING_LINE_ITEM where invoice_id=%s",(invoice_id,)).collect(); js=[r[0] for r in rows]; s=repr(js).encode(); h=hashlib.sha256(s).hexdigest(); session.sql("update AI_FEATURE_HUB.SUBSCRIPTION_INVOICES set invoice_hash=%s where invoice_id=%s",(h,invoice_id)).collect(); return{'invoice_hash':h}

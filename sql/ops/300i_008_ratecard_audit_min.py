@@ -1,0 +1,3 @@
+from snowflake.snowpark import Session
+importuuid,datetime
+defrecord_rate_change(session:Session,rate_id,feature,base_price,currency,valid_from,valid_to):rid=str(uuid.uuid4());session.sql("insert into AI_FEATURE_HUB.RATE_CARD_HISTORY(rate_hist_id,rate_id,feature_key,base_unit_price,currency,valid_from,valid_to) values(%s,%s,%s,%s,%s,%s,%s)",(rid,rate_id,feature,base_price,currency,valid_from,valid_to)).collect();return{'rate_hist_id':rid}

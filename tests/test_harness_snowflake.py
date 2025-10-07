@@ -1,0 +1,1 @@
+importos,requests,json;fromsnowflake importconnector;SNOW_ACCOUNT=os.getenv('SNOW_ACCOUNT');SNOW_USER=os.getenv('SNOW_USER');SNOW_PW=os.getenv('SNOW_PW');defcall_preview():#use snowsql or REST;print("call-preview-placeholder");return True;if__name__=='__main__':assertcall_preview()

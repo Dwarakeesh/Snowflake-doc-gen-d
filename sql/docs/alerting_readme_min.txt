@@ -1,0 +1,1 @@
+Alertingpattern:alertswrittentoAI_FEATURE_HUB.ALERTS;externalpollerpicksunackedalertsandpoststoslack;configureSLACK_WEBHOOKenv

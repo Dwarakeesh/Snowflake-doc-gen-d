@@ -1,0 +1,1 @@
+INSERT INTO AI_FEATURE_HUB.EXPLAINABILITY(EXPLAIN_ID,PROMPT_ID,EXPLANATION) VALUES('exp-demo-1','prompt-demo-1',PARSE_JSON('{"why":"seed example","anchors":["doc-demo-1"]}'));

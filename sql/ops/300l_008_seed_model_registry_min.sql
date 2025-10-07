@@ -1,0 +1,1 @@
+INSERT INTO AI_FEATURE_HUB.MODEL_REGISTRY(MODEL_ID,NAME,PROVIDER,MODEL_TYPE,DEFAULT_PARAMS) VALUES('model-embed-v1','embed-v1','openai','embedding',PARSE_JSON('{"dims":1536}')),('model-gen-v1','gpt-gen-v1','openai','generation',PARSE_JSON('{"temperature":0.2}'));

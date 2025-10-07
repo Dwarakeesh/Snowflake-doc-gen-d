@@ -1,0 +1,2 @@
+from snowflake.snowpark import Session
+defbilling_reconcile(session:Session): rows=session.sql("select invoice_id,total from AI_FEATURE_HUB.SUBSCRIPTION_INVOICES where created_at>=dateadd(day,-1,current_timestamp())").collect(); diffs=[]; for r in rows: iid=r[0]; total=r[1]; # placeholder: compare to external billing system via integration; record no-op diffs.append({'invoice':iid,'total':total}); return {'reconciled':len(diffs)}

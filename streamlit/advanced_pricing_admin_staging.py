@@ -1,3 +1,5 @@
+# advanced_pricing_admin_staging.py
+# Streamlit app variant: submits proposed rules to RATE_RULES_STAGING via stored-proc
 import os, uuid, json, streamlit as st, snowflake.connector
 SNOW_ACCOUNT = os.getenv("SNOW_ACCOUNT")
 SNOW_USER = os.getenv("SNOW_USER")

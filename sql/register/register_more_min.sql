@@ -1,52 +1,8 @@
--- Register procedures after PUT to @~; grants must be adapted to your roles
-
--- Billing enhanced procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.RUN_BILLING_RUN_ENHANCED(
-        window_start STRING,
-        window_end STRING,
-        account_id STRING DEFAULT NULL,
-        dry_run BOOLEAN DEFAULT TRUE
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/run_billing_enhanced.py')
-    HANDLER = 'run_billing_enhanced';
-
--- Rate rule submission procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING(
-        staging_json STRING
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/submit_and_approve_procs.py')
-    HANDLER = 'submit_rate_rule';
-
--- Rate rule approval procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.APPROVE_RATE_RULE(
-        staging_id STRING,
-        approver STRING
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/submit_and_approve_procs.py')
-    HANDLER = 'approve_rate_rule';
-
--- Rate rule rejection procedure
-CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.REJECT_RATE_RULE(
-        staging_id STRING,
-        approver STRING,
-        reason STRING
-    )
-    RETURNS VARIANT
-    LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.10'
-    IMPORTS = ('@~/submit_and_approve_procs.py')
-    HANDLER = 'reject_rate_rule';
-
--- Grants (replace roles accordingly)
+-- register procs after PUT to @~; grants must be adapted to your roles
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.RUN_BILLING_RUN_ENHANCED(window_start STRING,window_end STRING,account_id STRING DEFAULT NULL,dry_run BOOLEAN DEFAULT TRUE) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/run_billing_enhanced.py') HANDLER='run_billing_enhanced';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING(staging_json STRING) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/submit_and_approve_procs.py') HANDLER='submit_rate_rule';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.APPROVE_RATE_RULE(staging_id STRING,approver STRING) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/submit_and_approve_procs.py') HANDLER='approve_rate_rule';
+CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.REJECT_RATE_RULE(staging_id STRING,approver STRING,reason STRING) RETURNS VARIANT LANGUAGE PYTHON RUNTIME_VERSION='3.10' IMPORTS=('@~/submit_and_approve_procs.py') HANDLER='reject_rate_rule';
 GRANT EXECUTE ON PROCEDURE AI_FEATURE_HUB.RUN_BILLING_RUN_ENHANCED TO ROLE YOUR_RUN_ROLE;
 GRANT EXECUTE ON PROCEDURE AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING TO ROLE YOUR_STREAMLIT_ROLE;
 GRANT EXECUTE ON PROCEDURE AI_FEATURE_HUB.APPROVE_RATE_RULE TO ROLE YOUR_APPROVER_ROLE;

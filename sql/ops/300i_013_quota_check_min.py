@@ -1,0 +1,2 @@
+from snowflake.snowpark import Session
+defcheck_quota(session:Session,account_id,feature_key,window_days=1):row=session.sql("select coalesce(sum(units),0) s from AI_FEATURE_HUB.TENANT_FEATURE_USAGE where account_id=%s and feature_key=%s and usage_timestamp>=dateadd(day,-%s,current_timestamp())",(account_id,feature_key,window_days)).collect()[0][0];q=session.sql("select DAILY_LIMIT from AI_FEATURE_HUB.TENANT_QUOTAS where account_id=%s and feature_key=%s",(account_id,feature_key)).collect();limit=q[0][0] if q else None;return{'used':row,'limit':limit}

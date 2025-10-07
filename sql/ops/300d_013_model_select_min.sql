@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION AI_FEATURE_HUB.GET_ACTIVE_MODEL(model_key STRING) RETURNS VARIANT LANGUAGE SQL AS $$ select object_construct('model_id',model_id,'version',version,'meta',meta) from AI_FEATURE_HUB.MODEL_REGISTRY where model_key=model_key and is_active=true order by deployed_at desc limit 1; $$;

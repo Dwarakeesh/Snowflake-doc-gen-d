@@ -1,0 +1,2 @@
+importos,requests,json
+defnotify_slack(invoice_id,summary): webhook=os.getenv('SLACK_WEBHOOK'); if not webhook: return {'error':'no_webhook'}; payload={'text':f'Invoice {invoice_id} processed: {summary}'}; r=requests.post(webhook,json=payload,timeout=5); return {'status':r.status_code}

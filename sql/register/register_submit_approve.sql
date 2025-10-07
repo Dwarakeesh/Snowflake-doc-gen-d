@@ -1,3 +1,6 @@
+-- register_submit_approve.sql
+-- PUT file://sql/billing/submit_and_approve_procs.py @~/ AUTO_COMPRESS=FALSE;
+
 CREATE OR REPLACE PROCEDURE AI_FEATURE_HUB.SUBMIT_RATE_RULE_TO_STAGING(staging_json STRING)
 RETURNS VARIANT
 LANGUAGE PYTHON

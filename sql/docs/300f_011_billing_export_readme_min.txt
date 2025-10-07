@@ -1,0 +1,1 @@
+BillingExport:CALL AI_FEATURE_HUB.EXPORT_BILLING_REPORT('br-123','AI_FEATURE_HUB.BILLING_ARCHIVE_STAGE');DOWNLOAD from stage then process with accounting.
